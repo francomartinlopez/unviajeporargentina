@@ -690,6 +690,12 @@ table.t td.real{color:var(--muted)}
 .perfil .paso .t i{font-style:normal;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--grad);color:#fff;font-size:.7rem;margin-right:6px}
 .perfil .pinfo{margin:8px 0 0;padding:10px 12px;border-radius:10px;background:var(--sheet);font-size:.86rem;line-height:1.45}
 .perfil .t small{font-weight:500;color:var(--muted)}
+/* buscador de localidades */
+.ac{position:relative}
+.acl{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:15;margin:0;padding:4px;list-style:none;background:var(--paper);border:1px solid var(--rule);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.16);max-height:280px;overflow:auto}
+.acl[hidden]{display:none}
+.acl li{padding:10px 12px;border-radius:8px;cursor:pointer;font-size:.95rem;color:var(--ink)}
+.acl li:hover,.acl li.on{background:var(--sheet)}
 
 </style>
 </head>
@@ -737,7 +743,7 @@ table.t td.real{color:var(--muted)}
     </fieldset>
     <div><label class="t" for="n">Nombre</label><input id="n" name="nombre" autocomplete="name" required></div>
     <div><label class="t" for="sp">Provincia</label><select id="sp" name="provincia" class="selprov" data-loc="l" required><option value="">Elegí la provincia</option></select></div>
-    <div><label class="t" for="l">Localidad</label><input id="l" name="localidad" list="l-list" autocomplete="off" placeholder="Primero elegí la provincia" required><datalist id="l-list"></datalist></div>
+    <div><label class="t" for="l">Localidad</label><div class="ac"><input id="l" name="localidad" autocomplete="off" placeholder="Primero elegí la provincia" required role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="l-ac"><ul class="acl" id="l-ac" role="listbox" hidden></ul></div></div>
     <div><label class="t" for="e">Correo electrónico</label><input id="e" name="email" type="email" autocomplete="email" required></div>
     <div><label class="t" for="tel">Teléfono o WhatsApp <small>(opcional)</small></label><input id="tel" name="telefono" type="tel" autocomplete="tel"></div>
     <div><label class="t" for="m">Mensaje</label><textarea id="m" name="mensaje" rows="4" required></textarea></div>
@@ -765,7 +771,7 @@ table.t td.real{color:var(--muted)}
     <div><label class="t" for="pn">Nombre y apellido</label><input id="pn" name="nombre" autocomplete="name" required></div>
     <div><label class="t" for="pe">Correo electrónico</label><input id="pe" name="email" type="email" autocomplete="email" required></div>
     <div><label class="t" for="pf">Teléfono <small>(opcional)</small></label><input id="pf" name="telefono" type="tel" autocomplete="tel"></div>
-    <div><label class="t" for="pl">Localidad</label><input id="pl" name="localidad" list="pl-list" autocomplete="off" placeholder="Primero elegí la provincia" required><datalist id="pl-list"></datalist></div>
+    <div><label class="t" for="pl">Localidad</label><div class="ac"><input id="pl" name="localidad" autocomplete="off" placeholder="Primero elegí la provincia" required role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="pl-ac"><ul class="acl" id="pl-ac" role="listbox" hidden></ul></div></div>
     <div><label class="t" for="px">Tu experiencia y por qué te interesa este cargo</label><textarea id="px" name="experiencia" rows="5" maxlength="1500" required></textarea></div>
     <label class="consent"><input type="checkbox" name="consentimiento" value="Acepto" required> <span>Acepto que mis datos se usen como se explica en "Cómo cuidamos tus datos", y sé que dejar mi perfil no es una postulación oficial.</span></label>
     <button class="btn" type="submit" id="pbtn">Me interesa este cargo</button>
@@ -910,11 +916,27 @@ $("ficha").innerHTML="<dt>Largada</dt><dd>"+fdl(R.inicio)+" de 2027 · Añelo</d
 
 /* provincias y localidades (Georef, INDEC) */
 (function(){var L=D.localidades,PROV=Object.keys(L).sort(function(a,b){return a.localeCompare(b,"es")});
+ function nz(x){return x.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
  document.querySelectorAll("select.selprov").forEach(function(sel){var extra=sel.id==="pp"?["Todo el país (cargo nacional)","Vivo en el exterior"]:["Vivo en el exterior"];
   sel.innerHTML='<option value="">Elegí la provincia</option>'+PROV.concat(extra).map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+"</option>"}).join("");
-  var inp=$(sel.getAttribute("data-loc")),dl=$(inp.getAttribute("list"));
-  sel.addEventListener("change",function(){var l=L[sel.value]||[];dl.innerHTML=l.map(function(x){return '<option value="'+esc(x)+'">'}).join("");inp.value="";
-   inp.placeholder=l.length?(sel.value==="Ciudad de Buenos Aires"?"Escribí tu barrio":"Escribí y elegí tu localidad"):(sel.value?"Escribí tu ciudad o localidad":"Primero elegí la provincia")})});
+  var inp=$(sel.getAttribute("data-loc")),ul=$(inp.getAttribute("aria-controls")),lista=[],act=-1;
+  function cerrarL(){ul.hidden=true;inp.setAttribute("aria-expanded","false");act=-1}
+  function mostrar(){var q=nz(inp.value.trim());if(!lista.length){cerrarL();return}
+   var r=q?lista.filter(function(x){return nz(x).indexOf(q)===0}).concat(lista.filter(function(x){var n=nz(x);return n.indexOf(q)!==0&&n.indexOf(" "+q)>=0})):lista;
+   r=r.slice(0,8);if(!r.length||(r.length===1&&r[0]===inp.value)){cerrarL();return}
+   ul.innerHTML=r.map(function(x,k){return '<li role="option" data-v="'+esc(x)+'"'+(k===act?' class="on"':"")+">"+esc(x)+"</li>"}).join("");ul.hidden=false;inp.setAttribute("aria-expanded","true")}
+  sel.addEventListener("change",function(){lista=L[sel.value]||[];inp.value="";cerrarL();
+   inp.placeholder=lista.length?(sel.value==="Ciudad de Buenos Aires"?"Escribí tu barrio":"Escribí y elegí tu localidad"):(sel.value?"Escribí tu ciudad o localidad":"Primero elegí la provincia")});
+  inp.addEventListener("input",function(){act=-1;mostrar()});
+  inp.addEventListener("focus",mostrar);
+  inp.addEventListener("blur",function(){setTimeout(cerrarL,150)});
+  inp.addEventListener("keydown",function(e){var it=ul.querySelectorAll("li");if(ul.hidden||!it.length)return;
+   if(e.key==="ArrowDown"){act=Math.min(it.length-1,act+1);e.preventDefault()}else if(e.key==="ArrowUp"){act=Math.max(0,act-1);e.preventDefault()}
+   else if(e.key==="Enter"&&act>=0){inp.value=it[act].getAttribute("data-v");cerrarL();e.preventDefault();return}else if(e.key==="Escape"){cerrarL();return}else return;
+   it.forEach(function(li,k){li.classList.toggle("on",k===act)})});
+  ul.addEventListener("mousedown",function(e){e.preventDefault()});
+  ul.addEventListener("click",function(e){var li=e.target.closest("li");if(!li)return;inp.value=li.getAttribute("data-v");cerrarL()});
+ });
 })();
 
 /* sumá tu perfil */
