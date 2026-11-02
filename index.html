@@ -696,6 +696,16 @@ table.t td.real{color:var(--muted)}
 .acl[hidden]{display:none}
 .acl li{padding:10px 12px;border-radius:8px;cursor:pointer;font-size:.95rem;color:var(--ink)}
 .acl li:hover,.acl li.on{background:var(--sheet)}
+/* la canción */
+.cvid{display:grid;grid-template-columns:1fr minmax(0,300px);gap:32px;align-items:center}
+.cvid .sub+.sub{margin-top:10px}
+.yt{position:relative;aspect-ratio:9/16;width:100%;max-width:300px;justify-self:center;border-radius:18px;overflow:hidden;background:#000;box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.yt .ytb{all:unset;display:block;width:100%;height:100%;cursor:pointer;position:relative}
+.yt img{width:100%;height:100%;object-fit:cover;display:block}
+.yt .play{position:absolute;left:50%;top:50%;width:68px;height:48px;transform:translate(-50%,-50%);transition:transform .15s}
+.yt .ytb:hover .play,.yt .ytb:focus-visible .play{transform:translate(-50%,-50%) scale(1.08)}
+.yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+@media (max-width:700px){.cvid{grid-template-columns:1fr}.yt{max-width:340px}}
 
 </style>
 </head>
@@ -712,7 +722,7 @@ table.t td.real{color:var(--muted)}
         <button type="button" data-g="1"><b>Resumido</b><small>Lo esencial de cada parte, en pocas líneas</small></button><button type="button" data-g="2"><b>Extendido</b><small>El porqué, cómo lo hacemos y cada lugar</small></button><button type="button" data-g="3"><b>Completo</b><small>Todo: preguntas, días y gastos</small></button>
       </div></div>
     <div class="menu"><button type="button" class="mbtn" id="mbtn" aria-expanded="false" aria-controls="mlist" aria-label="Menú"><span aria-hidden="true">☰</span><span class="mt"> Menú</span></button>
-      <nav class="mlist" id="mlist" hidden aria-label="Secciones"><a href="#inicio">Inicio</a><a href="#unminuto">Si tenés un minuto</a><a href="#estado">Dónde estamos</a><a href="#mapa">El recorrido</a><a href="#quien">A quién le hablamos</a><a href="#estrategia">Cómo lo hacemos</a><a href="#discurso">En pocas palabras</a><a href="#estampas">Las 10 estampas</a><a href="#etapas">Tramo por tramo</a><a href="#preguntas">Preguntas</a><a href="#propuestas">Las propuestas</a><a href="#cuentas">Cuentas claras</a><a href="#sumate">Sumate</a><a href="#perfil">Sumá tu perfil</a><a href="#palabras">Palabras bajo un mismo cielo</a><a href="#autor">Quién lo hizo</a><a href="#fin">Ir al final de la página</a></nav>
+      <nav class="mlist" id="mlist" hidden aria-label="Secciones"><a href="#inicio">Inicio</a><a href="#unminuto">Si tenés un minuto</a><a href="#estado">Dónde estamos</a><a href="#cancion">La canción</a><a href="#mapa">El recorrido</a><a href="#quien">A quién le hablamos</a><a href="#estrategia">Cómo lo hacemos</a><a href="#discurso">En pocas palabras</a><a href="#estampas">Las 10 estampas</a><a href="#etapas">Tramo por tramo</a><a href="#preguntas">Preguntas</a><a href="#propuestas">Las propuestas</a><a href="#cuentas">Cuentas claras</a><a href="#sumate">Sumate</a><a href="#perfil">Sumá tu perfil</a><a href="#palabras">Palabras bajo un mismo cielo</a><a href="#autor">Quién lo hizo</a><a href="#fin">Ir al final de la página</a></nav>
     </div></div>
   </div>
 </header>
@@ -721,6 +731,10 @@ table.t td.real{color:var(--muted)}
 <section class="leer"><div class="in"><div class="howto" id="howto"></div></div></section>
 <section class="minuto" id="unminuto"><div class="in"><span class="label">El viaje en seis líneas</span><h2>Si tenés un minuto</h2><div class="mg" id="minuto"></div></div></section>
 <section class="estado" id="estado"><div class="in" id="estin2"></div></section>
+<section class="sec cancion" id="cancion"><div class="in"><div class="cvid">
+  <div class="ctx"><span class="label">La canción</span><h2>Todos juntos bajo un mismo cielo</h2><p class="sub">Una canción para acompañar el viaje: la casa que todavía no está terminada, el país de punta a punta y la idea de juntarnos en lugar de dividirnos.</p><p class="sub">Si te gusta, compartila con quien quieras.</p><p><a class="dl" href="https://youtu.be/x24Z3IEepIs" target="_blank" rel="noopener">Verla en YouTube</a></p></div>
+  <div class="yt" id="yt" data-id="x24Z3IEepIs"><button type="button" class="ytb" aria-label="Reproducir la canción Todos juntos bajo un mismo cielo"><img src="video-portada.jpg" alt="" loading="lazy" width="480" height="854"><span class="play" aria-hidden="true"><svg viewBox="0 0 68 48"><path d="M66.5 7.7a8.5 8.5 0 0 0-6-6C55.2.3 34 .3 34 .3s-21.2 0-26.5 1.4a8.5 8.5 0 0 0-6 6C.1 13 .1 24 .1 24s0 11 1.4 16.3a8.5 8.5 0 0 0 6 6C12.8 47.7 34 47.7 34 47.7s21.2 0 26.5-1.4a8.5 8.5 0 0 0 6-6C67.9 35 67.9 24 67.9 24s0-11-1.4-16.3z" fill="#e84b49"/><path d="M45 24 27 14v20z" fill="#fff"/></svg></span></button></div>
+</div></div></section>
 <section class="sec" id="mapa"><div class="in"><span class="label">El recorrido</span><h2>De Añelo al Monumento a la Bandera</h2><p class="sub" id="mapasub"></p><div class="mapa"><div id="mapasvg"></div><ol class="tlist" id="tlist"></ol></div></div></section>
 <div id="textos"></div>
 <section class="sec" id="estampas"><div class="in" id="estin"></div></section>
@@ -961,6 +975,10 @@ $("ficha").innerHTML="<dt>Largada</dt><dd>"+fdl(R.inicio)+" de 2027 · Añelo</d
  [t,pv].forEach(function(el){el.addEventListener("input",subj);el.addEventListener("change",subj)});
  $("fperfil").addEventListener("submit",function(e){subj();if(location.protocol==="file:"||/claude|anthropic/.test(location.hostname)){e.preventDefault();$("pok").style.display="block"}});
 })();
+
+/* canción: carga YouTube solo al tocar play */
+(function(){var y=$("yt");if(!y)return;y.querySelector("button").addEventListener("click",function(){var id=y.getAttribute("data-id");
+ y.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&playsinline=1" title="Todos juntos bajo un mismo cielo" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'})})();
 
 /* niveles */
 function setNivel(el,n){el.setAttribute("data-nivel",n);el.querySelectorAll(":scope > .ph1 .seg button, :scope > .tsel .seg button, :scope .in > .tsel .seg button").forEach(function(b){b.setAttribute("aria-pressed",b.getAttribute("data-l")==n||b.getAttribute("data-t")==n?"true":"false")})}
